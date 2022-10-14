@@ -1,0 +1,229 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+    <title>Title</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css"
+        integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+</head>
+<style>
+    * {
+        box-sizing: border-box;
+    }
+
+    .container {
+        background-color: #FFF7E9;
+        border-radius: 5px;
+        display: flex;
+        padding: 20px 10px;
+
+    }
+
+    .header {
+      
+        padding: 10px;
+    }
+
+    .formdiv {
+        width: 30%;
+    }
+
+    .tablediv {
+        width: 70%;
+    }
+</style>
+
+<body>
+
+
+    <div class="container mt-5">
+        <div class="formdiv">
+            <div class="header">
+                <h4 class="text-center "> Quản lý nhân viên</h4>
+            </div>
+            <div class="form-group">
+                <label>Họ và tên</label>
+                <input type="text" class="form-control" id="name">
+            </div>
+            <div class="form-group">
+                <label>Tuổi</label>
+                <input type="text" class="form-control" id="age">
+            </div>
+            <div class="form-group">
+                <label>Quê quán</label>
+                <input type="text" class="form-control" id="home">
+            </div>
+            <div class="form-group">
+                <label>Ngày công/tháng</label>
+                <input type="number" class="form-control" id="ngay">
+            </div>
+            <div class="form-group">
+                <label>Tiền công/ ngày</label>
+                <input type="number" class="form-control" id="tienngay">
+            </div>
+            <div class="form-group">
+                <label>Làm thêm(giờ)</label>
+                <input type="number" class="form-control" id="them">
+            </div>
+            <input type="hidden" id="id">
+            <div class="text-center ">
+                <button onclick="xuly()" id="buton" class="btn btn-warning ">Submit</button>
+            </div>
+        </div>
+        <div class="tablediv">
+            <table class="table table-dark table-striped">
+                <thead>
+                    <tr>
+                        <th>Stt</th>
+                        <th>Họ và tên</th>
+                        <th>Tuổi</th>
+                        <th>Quê quán</th>
+                        <th>Lương</th>
+                        <th>Xếp loại thi đua</th>
+                        <th>Edit</th>
+                        <th>Delete</th>
+                    </tr>
+                </thead>
+                <tbody id="tbody">
+                </tbody>
+            </table>
+        </div>
+    </div>
+    <script>
+        // lấy giá trị input ra -----------------------
+        var data = [];
+        var flag = true;
+        // xử lý add và update
+        function xuly() {
+            if (flag) {
+                add();
+            }
+            else {
+                update();
+            }
+        }
+        // phương thức add 
+        function add() {
+            var name = document.getElementById("name").value;
+            var age = document.getElementById("age").value;
+            var home = document.getElementById("home").value;
+            var ngay = document.getElementById("ngay").value;
+            var tienngay = document.getElementById("tienngay").value;
+            var lamthem = document.getElementById("them").value;
+            var luong = (ngay * tienngay) + (lamthem * 20000);
+            var danhgia;
+            if(lamthem>20) {
+                danhgia = "Tốt";
+            } else {
+                danhgia = "Trung bình "
+            }
+            var item = {
+                name: name,
+                age: age,
+                home: home,
+                luong: luong,
+                danhgia: danhgia
+            }
+            data.push(item);
+            render();
+            reset();
+        }
+        // phương thức render ------------------
+        function render() {
+            var m = 1;
+            let table = "";
+            for (var i = 0; i < data.length; i++) {
+                table = table + `
+        <tr>    
+                    <td>${m++}</td>
+                    <td>${data[i].name}</td>
+                    <td>${data[i].age}</td>
+                    <td>${data[i].home}</td>
+                    <td>${data[i].luong} VND</td>
+                    <td>${data[i].danhgia}</td>
+                    <td ><button class = "btn btn-primary" onclick="sua(${i})">Edit</button></td>
+                    <td><button class = "btn btn-danger" onclick = "xoa(${i})">Delete</button></td>
+                </tr>
+        `
+            }
+            document.getElementById("tbody").innerHTML = table;
+        }
+        // phương thức reset dữ liệu -----------------
+        function reset() {
+            document.getElementById("name").value = "";
+            document.getElementById("age").value = "";
+            document.getElementById("home").value = "";
+            document.getElementById("ngay").value = "";
+            document.getElementById("tienngay").value = "";
+            document.getElementById("them").value = "";
+        }
+        // phương thức xóa dữ liệu theo mảng 
+        function xoa(x) {
+            for (let i = 0; i < data.length; i++) {
+                if (i == x) {
+                    data.splice(i, 1)
+                    render();
+                }
+            }
+        }
+        // phương thức lấy dữ liệu hiển thị ra form
+        function sua(x) {
+            for (let i = 0; i < data.length; i++) {
+                if (i == x) {
+                    document.getElementById("name").value = data[i].name;
+                    document.getElementById("age").value = data[i].age;
+                    document.getElementById("home").value = data[i].home;
+                    document.getElementById("id").value = i;
+                }
+            }
+            flag = false;
+            return x;
+        }
+        // phương thức cập nhật giá trị 
+        function update() {
+            let x = document.getElementById("id").value;
+            for (let i = 0; i < data.length; i++) {
+                if (i == x) {
+                    var danhgia;
+                    var ngay = document.getElementById("ngay").value;
+                    var tienngay = document.getElementById("tienngay").value;
+                    var lamthem = document.getElementById("them").value;
+                    if(lamthem>20) {
+                        danhgia = "Tốt"
+                    } else {
+                        danhgia = "Trung bình "
+                    }
+                    data[i].name = document.getElementById("name").value;
+                    data[i].age = document.getElementById("age").value;
+                    data[i].home = document.getElementById("home").value;
+                    data[i].luong = parseInt( (ngay * tienngay) + (lamthem * 20.000));
+                    data[i].danhgia = danhgia;
+                }
+            }
+            render();
+            reset();
+            flag = true;
+        }
+        // tạo một phương thức sử lý add hay update , xử dụng cở đầu tiền cho cờ là true để chạy add
+        // lấy giá từ fome , rồi tạo obj cho vào mảng
+        // tạo phương thức render ra dữ liệu lặp qua mảng và in ra
+        // edit thì làm gét lấy dữ liệu hiển thị ra fom đồng thời truyền id ra
+        // đổi cờ thành fale để vào updare
+        // lấy id ra và lặp qua mảng thằng napf trung thì gán giá trị thằng đó
+        // chuyển cờ thành true để bắt đầu lại từ đầu 
+
+    </script>
+    <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"
+        integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo"
+        crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"
+        integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1"
+        crossorigin="anonymous"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"
+        integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM"
+        crossorigin="anonymous"></script>
+</body>
+
+</html>
